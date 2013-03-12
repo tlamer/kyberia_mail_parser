@@ -19,15 +19,6 @@ args = par.parse_args()
 m = re.search('[0-9]+', args.fname)
 k_id = m.group(0)
 
-try:
-    f = open(expanduser(args.fname), 'r')
-except:
-    print('Can not open maildump file. Exiting.')
-    exit()
-
-soup = BeautifulSoup(f)
-mails = soup.find_all('mail')
-
 
 def parse_mail(mail):
     if (mail.find('from')['id'] == k_id):
@@ -40,7 +31,7 @@ def parse_mail(mail):
 
     text = mail.find('datetime').text + '\n' + mail.find('from').text + ' --> ' + mail.find('to').text + '\n' + mail.find('text').text.strip() + '\n-----------------------------\n\n'
 
-    if isdir(args.dname):
+    if isdir(args.dname) or (args.dname == ''):
         filename = args.dname + other + '.txt'
     else:
         print('Can not find output directory. Exiting')
@@ -53,8 +44,13 @@ def parse_mail(mail):
         print('Can not open file for writing. Exiting.')
         exit()
 
+if __name__ == '__main__':
+    try:
+        with open(expanduser(args.fname), 'r') as f:
+            soup = BeautifulSoup(f)
+    except:
+        print('Can not open maildump file. Exiting.')
+        exit()
 
-for mail in mails:
-    parse_mail(mail)
-
-f.close()
+    for mail in soup.find_all('mail'):
+        parse_mail(mail)
