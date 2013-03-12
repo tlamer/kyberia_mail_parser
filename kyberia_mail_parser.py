@@ -10,13 +10,13 @@ maildump: http://kyberia.sk/id/1997411"""
 
 par = argparse.ArgumentParser(description=desc, prog='kyberia_mail_parser')
 
-par.add_argument('-i', required=True, type=str, dest='fname',
+par.add_argument('-i', required=True, type=str, dest='target_file',
                  help='path to kyberia maildump file, in form: maildump-<id>.xml')
-par.add_argument('-o', type=str, default='', dest='dname',
+par.add_argument('-o', type=str, default='', dest='dest_dir',
                  help='path to output directory')
 
 args = par.parse_args()
-m = re.search('[0-9]+', args.fname)
+m = re.search('[0-9]+', args.target_file)
 k_id = m.group(0)
 
 
@@ -31,8 +31,8 @@ def parse_mail(mail):
 
     text = mail.find('datetime').text + '\n' + mail.find('from').text + ' --> ' + mail.find('to').text + '\n' + mail.find('text').text.strip() + '\n-----------------------------\n\n'
 
-    if isdir(args.dname) or (args.dname == ''):
-        filename = args.dname + other + '.txt'
+    if isdir(args.dest_dir) or (args.dest_dir == ''):
+        filename = args.dest_dir + other + '.txt'
     else:
         print('Can not find output directory. Exiting')
         exit()
@@ -46,7 +46,7 @@ def parse_mail(mail):
 
 if __name__ == '__main__':
     try:
-        with open(expanduser(args.fname), 'r') as f:
+        with open(expanduser(args.target_file), 'r') as f:
             soup = BeautifulSoup(f)
     except:
         print('Can not open maildump file. Exiting.')
